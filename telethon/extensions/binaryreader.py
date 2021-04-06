@@ -118,6 +118,10 @@ class BinaryReader:
     def tgread_object(self):
         """Reads a Telegram object."""
         constructor_id = self.read_int(signed=False)
+        if constructor_id in (0x58ae39c9, 0x286fa604):
+            print("constructor not found; return True")
+            return True
+
         clazz = tlobjects.get(constructor_id, None)
         if clazz is None:
             # The class was None, but there's still a
@@ -137,6 +141,7 @@ class BinaryReader:
                 pos = self.tell_position()
                 error = TypeNotFoundError(constructor_id, self.read())
                 self.set_position(pos)
+                print("constuctor_id=", constructor_id)
                 raise error
 
         return clazz.from_reader(self)
